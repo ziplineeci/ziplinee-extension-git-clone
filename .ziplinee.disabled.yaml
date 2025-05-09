@@ -1,0 +1,136 @@
+builder:
+  track: dev
+
+labels:
+  app-group: ziplinee-ci-extensions
+  team: ziplinee-team
+  language: golang
+
+version:
+  semver:
+    major: 0
+    minor: 1
+
+stages:
+  git-clone:
+    image: extensionci/git-clone:stable
+    when:
+      status == 'succeeded'
+
+  build:
+    image: golang:1.18.10-alpine3.17
+    env:
+      CGO_ENABLED: 0
+      GOOS: linux
+    commands:
+    - go test ./...
+    - go build -a -installsuffix cgo -ldflags "-X main.appgroup=${ZIPLINEE_LABEL_APP_GROUP} -X main.app=${ZIPLINEE_GIT_NAME} -X main.version=${ZIPLINEE_BUILD_VERSION} -X main.revision=${ZIPLINEE_GIT_REVISION} -X main.branch=${ZIPLINEE_GIT_BRANCH} -X main.buildDate=${ZIPLINEE_BUILD_DATETIME}" -o ./publish/${ZIPLINEE_GIT_NAME} .
+
+  bake:
+    image: extensionci/docker:dev
+    action: build
+    container: git-clone
+    repositories:
+    - extensionci
+    path: ./publish
+
+  check-container:
+    parallelStages:
+      check-efficiency:
+        image: extensionci/docker:dev
+        action: dive
+        container: git-clone
+        repositories:
+        - extensionci
+
+      vulnerability-scan:
+        image: extensionci/docker:dev
+        action: trivy
+        container: git-clone
+        severity: low
+        repositories:
+        - extensionci
+
+  integration-test-override-max:
+    image: extensionci/git-clone:${ZIPLINEE_BUILD_VERSION}
+    repo: ziplinee.io
+    branch: main
+    subdir: test
+
+  integration-test-override-min:
+    image: extensionci/git-clone:${ZIPLINEE_BUILD_VERSION}
+    repo: estafette.io
+    # does not branch for now, since the default value is still master but not used by estaffette.io anymore
+    branch: main
+
+  delete-all-files:
+    image: golang:1.18.10-alpine3.17
+    commands:
+    - ls -latr
+    - rm -rf *
+    - rm -rf .git
+    - rm -rf .estafette.yaml
+    - rm -rf .gitignore
+    - ls -latr
+
+  integration-test-override-any-public:
+    image: extensionci/git-clone:${ZIPLINEE_BUILD_VERSION}
+    repo: https://github.com/golang/go
+    branch: master
+    subdir: .
+
+  push-to-docker-hub:
+    image: extensionci/docker:dev
+    action: push
+    container: git-clone
+    repositories:
+    - extensionci
+
+
+releases:
+  dev:
+    triggers:
+    - pipeline:
+        name: self
+        branch: .+
+    stages:
+      tag-container-image:
+        image: extensionci/docker:dev
+        action: tag
+        container: git-clone
+        repositories:
+        - extensionci
+        tags:
+        - dev
+
+  beta:
+    stages:
+      tag-container-image:
+        image: extensionci/docker:dev
+        action: tag
+        container: git-clone
+        repositories:
+        - extensionci
+        tags:
+        - beta
+
+      slack-notify:
+        image: extensionci/slack-build-status:dev
+        workspace: estafette
+        channels:
+        - '#build-status'
+        when:
+          status == 'succeeded' ||
+          status == 'failed'
+
+  stable:
+    stages:
+      tag-container-image:
+        image: extensionci/docker:dev
+        action: tag
+        container: git-clone
+        repositories:
+        - extensionci
+        tags:
+        - stable
+        - latest
