@@ -10,4 +10,4 @@ COPY  ziplinee-extension-git-clone /
 
 ENV ZIPLINEE_LOG_FORMAT="console"
 
-ENTRYPOINT ["/ ziplinee-extension-git-clone"]
+ENTRYPOINT ["/ziplinee-extension-git-clone"]
