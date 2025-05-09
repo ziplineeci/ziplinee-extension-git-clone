@@ -6,7 +6,7 @@ LABEL maintainer="helm-ziplineeci.malsharbaji.com" \
 RUN apk add --update --no-cache \
       git \
       && rm -rf /var/cache/apk/*
-COPY  ziplinee-extension-git-clone /
+COPY  publish/ziplinee-extension-git-clone /
 
 ENV ZIPLINEE_LOG_FORMAT="console"
 
