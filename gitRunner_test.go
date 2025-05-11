@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetTargetDir(t *testing.T) {
-	t.Run("ReturnsEstafetteWorkIfSubdirIsDot", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkIfSubdirIsDot", func(t *testing.T) {
 
 		// act
 		path := getTargetDir(".")
@@ -15,7 +15,7 @@ func TestGetTargetDir(t *testing.T) {
 		assert.Equal(t, "/ziplinee-work", path)
 	})
 
-	t.Run("ReturnsEstafetteWorkSubdirIfSubdirIsSingleWord", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkSubdirIfSubdirIsSingleWord", func(t *testing.T) {
 
 		// act
 		path := getTargetDir("scripts")
@@ -23,7 +23,7 @@ func TestGetTargetDir(t *testing.T) {
 		assert.Equal(t, "/ziplinee-work/scripts", path)
 	})
 
-	t.Run("ReturnsEstafetteWorkSubdirIfSubdirIsDotSlashSingleWord", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkSubdirIfSubdirIsDotSlashSingleWord", func(t *testing.T) {
 
 		// act
 		path := getTargetDir("./scripts")
@@ -31,7 +31,7 @@ func TestGetTargetDir(t *testing.T) {
 		assert.Equal(t, "/ziplinee-work/scripts", path)
 	})
 
-	t.Run("ReturnsEstafetteWorkSubdirIfSubdirIsMultipleWordsSeparatedBySlash", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkSubdirIfSubdirIsMultipleWordsSeparatedBySlash", func(t *testing.T) {
 
 		// act
 		path := getTargetDir("scripts/sub")
@@ -39,7 +39,7 @@ func TestGetTargetDir(t *testing.T) {
 		assert.Equal(t, "/ziplinee-work/scripts/sub", path)
 	})
 
-	t.Run("ReturnsEstafetteWorkSubdirIfSubdirIsDotSlashMultipleWordsSeparatedBySlash", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkSubdirIfSubdirIsDotSlashMultipleWordsSeparatedBySlash", func(t *testing.T) {
 
 		// act
 		path := getTargetDir("./scripts/sub")
@@ -47,7 +47,7 @@ func TestGetTargetDir(t *testing.T) {
 		assert.Equal(t, "/ziplinee-work/scripts/sub", path)
 	})
 
-	t.Run("ReturnsEstafetteWorkSubdirIfSubdirIsAbsolutePath", func(t *testing.T) {
+	t.Run("ReturnsZiplineeWorkSubdirIfSubdirIsAbsolutePath", func(t *testing.T) {
 
 		// act
 		path := getTargetDir("/scripts")
