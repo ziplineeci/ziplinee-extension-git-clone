@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.9.0
-	github.com/ziplineeci/ziplinee-foundation v0.0.1
+	github.com/ziplineeci/ziplinee-foundation v0.0.2
 )
 
 require (
